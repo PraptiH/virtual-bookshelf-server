@@ -41,7 +41,35 @@ async function run() {
         const result = await booksCollection.insertOne(newBook)
         res.send(result)
     })
+    
+    app.post('/users', async (req, res) => {
+      const userProfile = req.body;
+      console.log(userProfile)
 
+      const query = { email: userProfile.email }
+      const updatedDoc = {
+        $set: userProfile
+      };
+      const options = {
+        upsert:true
+      }
+      const result = await usersCollection.updateOne(query, updatedDoc, options);
+      if (result.upsertedId) {
+        return res.send ((result.upsertedId))
+      }
+
+      else{
+        res.send(result)
+      }
+    })
+
+    //users API
+    const usersCollection = client.db('virtualBookshelf').collection('users')
+
+    app.get('/users',async(req,res)=>{
+        const result = await usersCollection.find().toArray()
+        res.send(result)
+    })
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
