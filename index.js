@@ -49,6 +49,18 @@ async function run() {
             res.send(result)
         })
 
+        app.patch('/books/:id', async(req,res)=>{
+            const id= req.params.id
+            const filter = {_id: new ObjectId(id)}
+            const updatedDoc = {
+                $set : {
+                    upvote : req.body.upvote
+                }
+            }
+            const result = await booksCollection.updateOne(filter, updatedDoc)
+            res.send(result)
+        })
+
 
 
         //users API
