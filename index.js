@@ -61,6 +61,32 @@ async function run() {
             res.send(result)
         })
 
+        app.put('/books/:id', async(req,res)=>{
+            const id = req.params.id;
+            const filter = {_id : new ObjectId(id)}
+            const options = {upsert:true}
+            const updatedBook = req.body
+            const updatedDoc = {
+                $set : updatedBook
+            }
+            const result = await booksCollection.updateOne(filter, updatedDoc, options)
+            res.send(result)
+        })
+ 
+
+        //Reveiws API
+        const reviewCollection = client.db('virtualBookshelf').collection('reviews')
+
+        app.get('/books/:id/review', async(req,res)=>{
+            const bookId = req.params.id
+            const query = {book_id : bookId}
+            const result = await reviewCollection.find(query).sort({created_at: -1}).toArray()
+            res.send(result)
+        })
+
+        app.post('/books/:id/review', async(req, res)=>{
+
+        })
 
 
         //users API
