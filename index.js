@@ -42,57 +42,68 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/books/:id', async(req,res)=>{
+        app.get('/books/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await booksCollection.findOne(query)
             res.send(result)
         })
 
-        app.patch('/books/:id', async(req,res)=>{
-            const id= req.params.id
-            const filter = {_id: new ObjectId(id)}
+        app.patch('/books/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: new ObjectId(id) }
             const updatedDoc = {
-                $set : {
-                    upvote : req.body.upvote
+                $set: {
+                    upvote: req.body.upvote
                 }
             }
             const result = await booksCollection.updateOne(filter, updatedDoc)
             res.send(result)
         })
 
-        app.put('/books/:id', async(req,res)=>{
+        app.put('/books/:id', async (req, res) => {
             const id = req.params.id;
-            const filter = {_id : new ObjectId(id)}
-            const options = {upsert:true}
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
             const updatedBook = req.body
             const updatedDoc = {
-                $set : updatedBook
+                $set: updatedBook
             }
             const result = await booksCollection.updateOne(filter, updatedDoc, options)
             res.send(result)
         })
 
-        app.delete('/books/:id', async(req,res)=>{
+        app.delete('/books/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id : new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await booksCollection.deleteOne(query)
             res.send(result)
         })
- 
+
 
         //Reveiws API
         const reviewCollection = client.db('virtualBookshelf').collection('reviews')
 
-        app.get('/books/:id/review', async(req,res)=>{
+        app.get('/books/:id/review', async (req, res) => {
             const bookId = req.params.id
-            const query = {book_id : bookId}
-            const result = await reviewCollection.find(query).sort({created_at: -1}).toArray()
+            const query = { book_id: bookId }
+            const result = await reviewCollection.find(query).sort({ created_at: -1 }).toArray()
             res.send(result)
         })
 
-        app.post('/books/:id/review', async(req, res)=>{
-
+        app.post('/books/:id/review', async (req, res) => {
+            const bookId = req.params.id
+            const {reviewText, reviewerName, reviewerEmail, reviewerPhoto} = req.body
+            const newReview = {
+                book_id: bookId,
+                reviewText,
+                reviewerName,
+                reviewerEmail,
+                reviewerPhoto,
+                created_at: new Date()
+            };
+            const result = await reviewCollection.insertOne(newReview)
+            res.send(result)
         })
 
 
