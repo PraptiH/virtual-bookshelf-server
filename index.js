@@ -103,6 +103,13 @@ async function run() {
                 created_at: new Date()
             };
             const result = await reviewCollection.insertOne(newReview)
+            res.send({...newReview, _id:result.insertedId})
+        })
+
+        app.delete('/books/:bookId/review/:reviewId', async(req,res)=>{
+            const reviewId  = req.params.reviewId
+            const query = {_id: new ObjectId(reviewId)}
+            const result =  await reviewCollection.deleteOne(query)
             res.send(result)
         })
 
